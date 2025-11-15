@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>All Movie Screenings</h1>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Movie Name</th>
+            <th>Cinema Hall</th>
+            <th>Seats</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="screening : ${screenings}">
+            <td th:text="${screening.id}"></td>
+            <td th:text="${#temporals.format(screening.date, 'dd.MM.yyyy HH:mm')}"></td>
+            <td th:text="${screening.movieName}"></td>
+            <td th:text="${screening.cinemaHall}"></td>
+            <td><a th:href="@{|/${screening.id}/seats|}" class="btn btn-info">Book Seats</a></td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
