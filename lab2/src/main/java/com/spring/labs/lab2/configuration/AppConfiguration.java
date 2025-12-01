@@ -33,7 +33,6 @@ public class AppConfiguration {
     @Value("classpath:data/seats.csv")
     private Resource seatsFile;
 
-
     private Stream<String> getResourceLines(Resource resource) throws IOException {
         var inputStream = resource.getInputStream();
         var streamReader = new InputStreamReader(inputStream);
