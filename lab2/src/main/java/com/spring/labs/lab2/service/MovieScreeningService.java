@@ -26,11 +26,11 @@ public class MovieScreeningService {
     }
 
     public MovieScreening addScreening(MovieScreening screening) {
-        boolean duplicate = movieScreeningRepository.findAll().stream()
-                .anyMatch(s -> s.getId().equals(screening.getId()) ||
-                        movieScreeningExists(screening));
+        boolean duplicate = movieScreeningRepository.findAll()
+                .stream()
+                .anyMatch(s -> s.getId().equals(screening.getId()));
 
-        if (duplicate) {
+        if (duplicate || movieScreeningExists(screening)) {
             throw new ScreeningAlreadyExistsException("Screening with same id or date/hall already exists.");
         }
 

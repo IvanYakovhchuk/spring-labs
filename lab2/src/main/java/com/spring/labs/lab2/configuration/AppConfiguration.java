@@ -5,13 +5,16 @@ import com.spring.labs.lab2.entity.Seat;
 import com.spring.labs.lab2.entity.Ticket;
 import com.spring.labs.lab2.repository.MovieScreeningRepository;
 import com.spring.labs.lab2.repository.TicketRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.Resource;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +24,27 @@ import java.util.stream.Stream;
 @Configuration
 public class AppConfiguration {
 
+    @Value("classpath:data/tickets.csv")
+    private Resource ticketsFile;
+
+    @Value("classpath:data/screenings.csv")
+    private Resource screeningsFile;
+
+    @Value("classpath:data/seats.csv")
+    private Resource seatsFile;
+
+
+    private Stream<String> getResourceLines(Resource resource) throws IOException {
+        var inputStream = resource.getInputStream();
+        var streamReader = new InputStreamReader(inputStream);
+        var bufferedReader = new BufferedReader(streamReader);
+        return bufferedReader.lines();
+    }
+
     @Bean
     @Scope("singleton")
     public List<Ticket> tickets() {
-        try (Stream<String> data = Files.lines(Path.of("src/main/resources/static/tickets.txt"))) {
+        try (Stream<String> data = getResourceLines(ticketsFile)) {
             return data.skip(1)
                     .map(line -> line.split(","))
                     .map(fields -> new Ticket(
@@ -43,7 +63,7 @@ public class AppConfiguration {
     @Bean
     @Scope("singleton")
     public List<MovieScreening> screenings() {
-        try (Stream<String> data = Files.lines(Path.of("src/main/resources/static/screenings.txt"))) {
+        try (Stream<String> data = getResourceLines(screeningsFile)) {
             return data.skip(1)
                     .map(line -> line.split(","))
                     .map(fields -> new MovieScreening(
@@ -61,7 +81,7 @@ public class AppConfiguration {
     @Bean
     @Scope("singleton")
     public List<Seat> seats() {
-        try (Stream<String> data = Files.lines(Path.of("src/main/resources/static/seats.txt"))) {
+        try (Stream<String> data = getResourceLines(seatsFile)) {
             return data.skip(1)
                     .map(line -> line.split(","))
                     .map(fields -> new Seat(
