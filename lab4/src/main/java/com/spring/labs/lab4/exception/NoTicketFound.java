@@ -1,7 +1,11 @@
 package com.spring.labs.lab4.exception;
 
-public class NoTicketFound extends RuntimeException {
-    public NoTicketFound(String message) {
-        super(message);
+public class NoTicketFound extends NoEntityFound {
+    public NoTicketFound() {
+        super("Ticket");
+    }
+
+    public NoTicketFound(Long id) {
+        super("Ticket", id);
     }
 }

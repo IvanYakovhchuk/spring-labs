@@ -4,6 +4,7 @@ import com.spring.labs.lab4.service.MovieScreeningService;
 import com.spring.labs.lab4.service.SeatService;
 import com.spring.labs.lab4.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,14 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "movieScreenings")
 public class MovieScreeningController {
 
-    private final SeatService seatService;
     private final MovieScreeningService movieScreeningService;
-    private final TicketService ticketService;
 
     @Autowired
-    public MovieScreeningController(SeatService seatService, MovieScreeningService movieScreeningService, TicketService ticketService) {
-        this.seatService = seatService;
+    public MovieScreeningController(MovieScreeningService movieScreeningService) {
         this.movieScreeningService = movieScreeningService;
-        this.ticketService = ticketService;
     }
+
 }

@@ -31,7 +31,7 @@ public class TicketServiceImpl implements TicketService {
 
     public Ticket getTicketById(long id) {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new NoTicketFound("Ticket not found with id: " + id));
+                .orElseThrow(() -> new NoTicketFound(id));
     }
 
     public List<Ticket> getAllTickets() {
@@ -40,13 +40,13 @@ public class TicketServiceImpl implements TicketService {
 
     public Ticket addTicket(Ticket ticket) {
         MovieScreening screening = screeningRepository.findById(ticket.getScreeningId())
-                .orElseThrow(() -> new NoScreeningFound("Screening not found"));
+                .orElseThrow(NoScreeningFound::new);
 
         Seat seat = seatRepository.findById(ticket.getSeatId())
-                .orElseThrow(() -> new NoSeatFound("Seat not found"));
+                .orElseThrow(NoSeatFound::new);
 
         if (screening.getCinemaHall() != seat.getCinemaHall()) {
-            throw new InvalidSeatForScreeningException("Seat is not in the same hall as the screening");
+            throw new InvalidSeatForScreening();
         }
 
         boolean duplicate = ticketRepository.findAll().stream()
@@ -55,7 +55,7 @@ public class TicketServiceImpl implements TicketService {
                          t.getSeatId().equals(ticket.getSeatId())));
 
         if (duplicate) {
-            throw new TicketAlreadyExistsException("Ticket already exists for this seat and screening");
+            throw new TicketAlreadyExists("seat and screening");
         }
 
         long nextId = ticketRepository.findAll().stream()
@@ -72,10 +72,10 @@ public class TicketServiceImpl implements TicketService {
 
     public Ticket updateTicketById(long id, Ticket newTicket) {
         Ticket oldTicket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NoTicketFound("Ticket not found with id: " + id));
+                .orElseThrow(() -> new NoTicketFound(id));
 
         if (isSeatAndScreeningInvalid(newTicket))
-            throw new InvalidSeatForScreeningException("Seat is not in the same hall as the screening");
+            throw new InvalidSeatForScreening();
 
         boolean duplicate = ticketRepository.findAll().stream()
                 .anyMatch(t -> !t.getId().equals(id) &&
@@ -84,7 +84,7 @@ public class TicketServiceImpl implements TicketService {
 
 
         if (duplicate) {
-            throw new TicketAlreadyExistsException("Ticket already exists for this seat and screening");
+            throw new TicketAlreadyExists("seat and screening");
         }
 
         oldTicket.setScreeningId(newTicket.getScreeningId());
@@ -101,10 +101,10 @@ public class TicketServiceImpl implements TicketService {
 
     private boolean isSeatAndScreeningInvalid(Ticket ticket) {
         MovieScreening screening = screeningRepository.findById(ticket.getScreeningId())
-                .orElseThrow(() -> new NoScreeningFound("Screening not found"));
+                .orElseThrow(NoScreeningFound::new);
 
         Seat seat = seatRepository.findById(ticket.getSeatId())
-                .orElseThrow(() -> new NoSeatFound("Seat not found"));
+                .orElseThrow(NoSeatFound::new);
 
         return seat.getCinemaHall() != screening.getCinemaHall();
     }

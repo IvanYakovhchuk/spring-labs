@@ -2,7 +2,7 @@ package com.spring.labs.lab4.service.impl;
 
 import com.spring.labs.lab4.entity.Seat;
 import com.spring.labs.lab4.exception.NoSeatFound;
-import com.spring.labs.lab4.exception.SeatAlreadyExistsException;
+import com.spring.labs.lab4.exception.SeatAlreadyExists;
 import com.spring.labs.lab4.repository.SeatRepository;
 import com.spring.labs.lab4.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class SeatServiceImpl implements SeatService {
 
     public Seat getSeatById(long id) {
         return seatRepository.findById(id)
-                .orElseThrow(() -> new NoSeatFound("Seat not found with id: " + id));
+                .orElseThrow(() -> new NoSeatFound(id));
     }
 
     public List<Seat> getAllSeats() {
@@ -36,7 +36,7 @@ public class SeatServiceImpl implements SeatService {
                 .anyMatch(s -> s.getId().equals(seat.getId()) || isSeatInfoEqual(s, seat));
 
         if (duplicate) {
-            throw new SeatAlreadyExistsException("Seat with same id or same hall/row/number already exists.");
+            throw new SeatAlreadyExists("id or hall/row/number");
         }
 
         seatRepository.save(seat);
@@ -45,13 +45,13 @@ public class SeatServiceImpl implements SeatService {
 
     public Seat updateSeatById(long id, Seat newSeat) {
         Seat oldSeat = seatRepository.findById(id)
-                .orElseThrow(() -> new NoSeatFound("Seat not found with id: " + id));
+                .orElseThrow(() -> new NoSeatFound(id));
 
         boolean duplicate = seatRepository.findAll().stream()
                 .anyMatch(s -> !s.getId().equals(id) && isSeatInfoEqual(s, newSeat));
 
         if (duplicate) {
-            throw new SeatAlreadyExistsException("Another seat with the same hall/row/number already exists.");
+            throw new SeatAlreadyExists("hall/row/number");
         }
 
         oldSeat.setCinemaHall(newSeat.getCinemaHall());

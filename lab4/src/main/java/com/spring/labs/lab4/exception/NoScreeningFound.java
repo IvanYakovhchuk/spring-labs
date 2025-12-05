@@ -1,7 +1,11 @@
 package com.spring.labs.lab4.exception;
 
-public class NoScreeningFound extends RuntimeException {
-    public NoScreeningFound(String message) {
-        super(message);
+public class NoScreeningFound extends NoEntityFound {
+    public NoScreeningFound() {
+        super("Screening");
+    }
+
+    public NoScreeningFound(Long id) {
+        super("Screening", id);
     }
 }

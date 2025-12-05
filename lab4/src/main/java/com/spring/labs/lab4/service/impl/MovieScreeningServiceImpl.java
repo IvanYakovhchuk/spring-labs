@@ -2,7 +2,7 @@ package com.spring.labs.lab4.service.impl;
 
 import com.spring.labs.lab4.entity.MovieScreening;
 import com.spring.labs.lab4.exception.NoScreeningFound;
-import com.spring.labs.lab4.exception.ScreeningAlreadyExistsException;
+import com.spring.labs.lab4.exception.ScreeningAlreadyExists;
 import com.spring.labs.lab4.repository.MovieScreeningRepository;
 import com.spring.labs.lab4.service.MovieScreeningService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
 
     public MovieScreening getScreeningById(long id) {
         return movieScreeningRepository.findById(id)
-                .orElseThrow(() -> new NoScreeningFound("Screening not found with id: " + id));
+                .orElseThrow(() -> new NoScreeningFound(id));
     }
 
     public List<MovieScreening> getAllScreenings() {
@@ -32,7 +32,7 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
                 .anyMatch(s -> s.getId().equals(screening.getId()));
 
         if (duplicate || movieScreeningExists(screening)) {
-            throw new ScreeningAlreadyExistsException("Screening with same id or date/hall already exists.");
+            throw new ScreeningAlreadyExists("id or date/hall");
         }
 
         movieScreeningRepository.save(screening);
@@ -41,7 +41,7 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
 
     public MovieScreening updateScreeningById(long id, MovieScreening newScreening) {
         MovieScreening oldScreening = movieScreeningRepository.findById(id)
-                .orElseThrow(() -> new NoScreeningFound("Screening not found with id: " + id));
+                .orElseThrow(() -> new NoScreeningFound(id));
 
         boolean duplicate = movieScreeningRepository.findAll().stream()
                 .anyMatch(s -> !s.getId().equals(id) &&
@@ -50,7 +50,7 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
                                 .isEqual(newScreening.getDate().truncatedTo(ChronoUnit.MINUTES)));
 
         if (duplicate) {
-            throw new ScreeningAlreadyExistsException("Another screening with the same date/hall already exists.");
+            throw new ScreeningAlreadyExists("date/hall");
         }
 
         oldScreening.setCinemaHall(newScreening.getCinemaHall());
