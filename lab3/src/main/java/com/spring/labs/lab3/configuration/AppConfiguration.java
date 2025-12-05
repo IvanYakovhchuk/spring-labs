@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
 
@@ -42,6 +43,7 @@ public class AppConfiguration {
 
     @Bean
     @Scope("singleton")
+    @Profile("seeding")
     public List<Ticket> tickets() {
         try (Stream<String> data = getResourceLines(ticketsFile)) {
             return data.skip(1)
@@ -61,6 +63,7 @@ public class AppConfiguration {
 
     @Bean
     @Scope("singleton")
+    @Profile("seeding")
     public List<MovieScreening> screenings() {
         try (Stream<String> data = getResourceLines(screeningsFile)) {
             return data.skip(1)
@@ -79,6 +82,7 @@ public class AppConfiguration {
 
     @Bean
     @Scope("singleton")
+    @Profile("seeding")
     public List<Seat> seats() {
         try (Stream<String> data = getResourceLines(seatsFile)) {
             return data.skip(1)

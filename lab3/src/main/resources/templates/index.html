@@ -9,15 +9,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <h1>All Movie Screenings</h1>
-
-    <table class="table table-bordered">
+    <h1>All Movie Screenings:</h1>
+    <h1 th:if="${screenings.size() == 0}" class="text-center">No movies :(</h1>
+    <table th:unless="${screenings.size() == 0}" class="table table-bordered">
         <thead>
         <tr>
             <th>ID</th>
             <th>Date</th>
             <th>Movie Name</th>
             <th>Cinema Hall</th>
+            <th>Seats booked</th>
             <th>Seats</th>
         </tr>
         </thead>
@@ -27,6 +28,13 @@
             <td th:text="${#temporals.format(screening.date, 'dd.MM.yyyy HH:mm')}"></td>
             <td th:text="${screening.movieName}"></td>
             <td th:text="${screening.cinemaHall}"></td>
+            <td>
+                <th:block th:switch="${screening.getBookedSeatsIds().size()}">
+                    <span th:case="0">None</span>
+                    <span th:case="1">1 seat booked</span>
+                    <span th:case="*" th:text="${screening.getBookedSeatsIds().size()} + ' seats booked'"></span>
+                </th:block>
+            </td>
             <td><a th:href="@{|/${screening.id}/seats|}" class="btn btn-info">Book Seats</a></td>
         </tr>
         </tbody>
