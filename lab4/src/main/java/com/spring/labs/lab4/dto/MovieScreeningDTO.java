@@ -1,5 +1,7 @@
 package com.spring.labs.lab4.dto;
 
+import com.spring.labs.lab4.entity.MovieScreening;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +21,16 @@ public class MovieScreeningDTO {
         this.movieName = movieName;
         this.cinemaHall = cinemaHall;
         this.bookedSeatsIds = bookedSeatsIds;
+    }
+
+    public static MovieScreeningDTO fromEntity(MovieScreening screening) {
+        return new MovieScreeningDTO(
+            screening.getId(),
+            screening.getDate(),
+            screening.getMovieName(),
+            screening.getCinemaHall(),
+            screening.getBookedSeatsIds().stream().toList()
+        );
     }
 
     public Long getId() {

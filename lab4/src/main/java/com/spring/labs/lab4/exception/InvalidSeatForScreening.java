@@ -1,7 +1,10 @@
 package com.spring.labs.lab4.exception;
 
-public class InvalidSeatForScreening extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+public class InvalidSeatForScreening extends ResponseStatusException {
     public InvalidSeatForScreening() {
-        super("Seat is not in the same hall as the screening");
+        super(HttpStatus.CONFLICT, "Seat is not in the same hall as the screening");
     }
 }

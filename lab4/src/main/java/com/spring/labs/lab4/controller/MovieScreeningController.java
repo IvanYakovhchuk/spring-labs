@@ -2,11 +2,9 @@ package com.spring.labs.lab4.controller;
 
 import com.spring.labs.lab4.dto.MovieScreeningDTO;
 import com.spring.labs.lab4.service.MovieScreeningService;
+import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "movieScreenings")
@@ -20,14 +18,8 @@ public class MovieScreeningController {
     }
 
     @GetMapping("{id}")
-    public MovieScreeningDTO getMovieScreening(@PathVariable Long id) {
+    public MovieScreeningDTO getMovieScreening(@PathVariable @Positive Long id) {
         var screening = movieScreeningService.getScreeningById(id);
-        return new MovieScreeningDTO(
-            screening.getId(),
-            screening.getDate(),
-            screening.getMovieName(),
-            screening.getCinemaHall(),
-            screening.getBookedSeatsIds().stream().toList()
-        );
+        return MovieScreeningDTO.fromEntity(screening);
     }
 }
