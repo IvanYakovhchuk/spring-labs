@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,6 +54,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(ResponseStatusException.class)
     public ErrorResponse handleResponseStatusException(ResponseStatusException ex) {
         return ex;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ErrorResponse handleNoResourceFoundException(NoResourceFoundException ex) {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
