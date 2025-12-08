@@ -13,19 +13,21 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "screening_id")
-    private Long screeningId;
-    @Column(name = "seat_id")
-    private Long seatId;
+    @ManyToOne
+    @JoinColumn(name = "screening_id")
+    private MovieScreening screening;
+    @ManyToOne
+    @JoinColumn(name = "seat_id")
+    private Seat seat;
     @Column(name = "customer_name")
     private String customerName;
     @Column(name = "price")
     private double price;
 
-    public Ticket(Long id, Long screeningId, Long seatId, String customerName, double price) {
+    public Ticket(Long id, Seat seat, MovieScreening screening, String customerName, double price) {
         this.id = id;
-        this.screeningId = screeningId;
-        this.seatId = seatId;
+        this.seat = seat;
+        this.screening = screening;
         this.customerName = customerName;
         this.price = price;
     }
@@ -41,20 +43,20 @@ public class Ticket {
         this.id = id;
     }
 
-    public Long getScreeningId() {
-        return screeningId;
+    public MovieScreening getScreening() {
+        return screening;
     }
 
-    public void setScreeningId(Long screeningId) {
-        this.screeningId = screeningId;
+    public void setScreening(MovieScreening screening) {
+        this.screening = screening;
     }
 
-    public Long getSeatId() {
-        return seatId;
+    public Seat getSeat() {
+        return seat;
     }
 
-    public void setSeatId(Long seatId) {
-        this.seatId = seatId;
+    public void setSeat(Seat seat) {
+        this.seat = seat;
     }
 
     public String getCustomerName() {
@@ -77,8 +79,8 @@ public class Ticket {
     public String toString() {
         return "Ticket{" +
                 "id=" + id +
-                ", screeningId=" + screeningId +
-                ", seatId=" + seatId +
+                ", screening=" + screening +
+                ", seat=" + seat +
                 ", customerName='" + customerName + '\'' +
                 ", price=" + price +
                 '}';

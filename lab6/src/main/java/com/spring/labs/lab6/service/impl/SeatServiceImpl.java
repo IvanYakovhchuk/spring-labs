@@ -36,13 +36,12 @@ public class SeatServiceImpl implements SeatService {
     @Transactional
     @Override
     public Seat createSeat(Seat seat) {
-        if (seatRepository.findByCinemaHallAndRowAndNumber(seat.getCinemaHall(), seat.getRow(), seat.getNumber())
-                .isPresent()) {
-            throw new SeatAlreadyExistsException("Such seat already exists!");
-        }
-        Seat newSeat = new Seat(null, seat.getCinemaHall(), seat.getRow(), seat.getNumber(), seat.isVip());
-        seatRepository.save(newSeat);
-        return newSeat;
+        seatRepository.findByCinemaHallAndRowAndNumber(seat.getCinemaHall(), seat.getRow(), seat.getNumber())
+                .ifPresent(s -> {
+                    throw new SeatAlreadyExistsException("Such seat already exists!");
+                });
+        seat.setId(null);
+        return seatRepository.save(seat);
     }
 
     @Transactional
@@ -52,7 +51,7 @@ public class SeatServiceImpl implements SeatService {
                 .findByCinemaHallAndRowAndNumber(newSeat.getCinemaHall(), newSeat.getRow(), newSeat.getNumber());
 
         if (existingSeat.isPresent() && existingSeat.get().getId() != id) {
-            throw new SeatAlreadyExistsException("Such seat already exists!");
+            throw new SeatAlreadyExistsException("Cannot update seat. Such seat already exists!");
         }
 
         Seat oldSeat = seatRepository.findSeatByIdUsingNamedQueryAnnotation(id)
@@ -65,11 +64,9 @@ public class SeatServiceImpl implements SeatService {
         return oldSeat;
     }
 
+    @Transactional
     @Override
     public void deleteSeatById(long id) {
-        if (!seatRepository.existsById(id)) {
-            throw new NoSeatFoundException("No seat found with such id: " + id + "!");
-        }
         seatRepository.deleteById(id);
     }
 }

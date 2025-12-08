@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "movie_screening")
@@ -23,8 +24,8 @@ public class MovieScreening {
     private String movieName;
     @Column(name = "cinema_hall")
     private int cinemaHall;
-    @Column(name = "booked_seats_ids")
-    private final Set<Long> bookedSeatsIds = new HashSet<>();
+    @OneToMany(mappedBy = "screening", fetch = FetchType.LAZY)
+    private final Set<Ticket> tickets = new HashSet<>();
 
     public MovieScreening() {
     }
@@ -69,7 +70,10 @@ public class MovieScreening {
     }
 
     public Set<Long> getBookedSeatsIds() {
-        return bookedSeatsIds;
+        return tickets.stream()
+                .map(Ticket::getSeat)
+                .map(Seat::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -79,7 +83,7 @@ public class MovieScreening {
                 ", date=" + date +
                 ", movieName='" + movieName + '\'' +
                 ", cinemaHall=" + cinemaHall +
-                ", bookedSeatsIds=" + bookedSeatsIds +
+                ", bookedSeatsIds=" + getBookedSeatsIds() +
                 '}';
     }
 }

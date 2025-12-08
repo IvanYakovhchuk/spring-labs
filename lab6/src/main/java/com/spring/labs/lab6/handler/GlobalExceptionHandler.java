@@ -1,7 +1,6 @@
 package com.spring.labs.lab6.handler;
 
-import com.spring.labs.lab6.exception.NoSeatFoundException;
-import com.spring.labs.lab6.exception.SeatAlreadyExistsException;
+import com.spring.labs.lab6.exception.*;
 import com.spring.labs.lab6.exception.response.ExceptionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -30,14 +29,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-
-    @ExceptionHandler(NoSeatFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleNoSeatFoundException(NoSeatFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(SeatAlreadyExistsException.class)
-    public ResponseEntity<ExceptionResponse> handleSeatAlreadyExistsException(SeatAlreadyExistsException ex) {
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleAlreadyExistsException(AlreadyExistsException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
@@ -47,4 +45,11 @@ public class GlobalExceptionHandler {
                 ex.getValue(), ex.getName());
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
+
+    @ExceptionHandler(InvalidSeatForScreeningException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidSeatForScreeningException(InvalidSeatForScreeningException ex) {
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+    }
+
+
 }
