@@ -1,9 +1,6 @@
 package com.spring.labs.lab4.repository;
 
-import com.spring.labs.lab4.dto.FilterMovieScreeningDTO;
-import com.spring.labs.lab4.dto.Page;
-import com.spring.labs.lab4.dto.PaginationDTO;
-import com.spring.labs.lab4.dto.SortOrderDTO;
+import com.spring.labs.lab4.dto.*;
 import com.spring.labs.lab4.entity.MovieScreening;
 
 import java.util.List;

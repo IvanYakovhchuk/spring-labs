@@ -1,9 +1,6 @@
 package com.spring.labs.lab4.service.impl;
 
-import com.spring.labs.lab4.dto.FilterMovieScreeningDTO;
-import com.spring.labs.lab4.dto.Page;
-import com.spring.labs.lab4.dto.PaginationDTO;
-import com.spring.labs.lab4.dto.SortOrderDTO;
+import com.spring.labs.lab4.dto.*;
 import com.spring.labs.lab4.entity.MovieScreening;
 import com.spring.labs.lab4.exception.NoScreeningFound;
 import com.spring.labs.lab4.exception.ScreeningAlreadyExists;
@@ -34,12 +31,10 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
         return movieScreeningRepository.findAll(filterDTO, paginationDTO, sortOrderDTO);
     }
 
-    public MovieScreening addScreening(MovieScreening screening) {
-        boolean duplicate = movieScreeningRepository.findAll()
-                .stream()
-                .anyMatch(s -> s.getId().equals(screening.getId()));
+    public MovieScreening addScreening(CreateMovieScreeningDTO dto) {
+        var screening = dto.toEntity();
 
-        if (duplicate || movieScreeningExists(screening)) {
+        if (movieScreeningExists(screening)) {
             throw new ScreeningAlreadyExists("id or date/hall");
         }
 
@@ -74,8 +69,13 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
 
     private boolean movieScreeningExists(MovieScreening movieScreening) {
         return movieScreeningRepository.findAll().stream()
-                .anyMatch(s -> s.getCinemaHall() == movieScreening.getCinemaHall() &&
-                        s.getDate().truncatedTo(ChronoUnit.MINUTES)
-                                .isEqual(movieScreening.getDate().truncatedTo(ChronoUnit.MINUTES)));
+                .anyMatch(s -> s.getId().equals(movieScreening.getId())
+                        || screeningsCollide(s, movieScreening));
+    }
+
+    private boolean screeningsCollide(MovieScreening s1, MovieScreening s2) {
+        return s1.getCinemaHall() == s2.getCinemaHall() &&
+                s1.getDate().truncatedTo(ChronoUnit.MINUTES)
+                        .isEqual(s2.getDate().truncatedTo(ChronoUnit.MINUTES));
     }
 }

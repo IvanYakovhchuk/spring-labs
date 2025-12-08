@@ -48,4 +48,10 @@ public class MovieScreeningController {
                 page.getTotal(),
                 page.getItems().stream().map(MovieScreeningDTO::fromEntity).toList());
     }
+
+    @PostMapping
+    public MovieScreeningDTO addScreening(@Valid @RequestBody CreateMovieScreeningDTO dto) {
+        var screening = movieScreeningService.addScreening(dto);
+        return MovieScreeningDTO.fromEntity(screening);
+    }
 }

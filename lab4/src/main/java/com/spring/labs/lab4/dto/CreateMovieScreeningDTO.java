@@ -1,5 +1,6 @@
 package com.spring.labs.lab4.dto;
 
+import com.spring.labs.lab4.entity.MovieScreening;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class CreateMovieScreeningDTO {
         this.movieName = movieName;
         this.cinemaHall = cinemaHall;
         this.date = date;
+    }
+
+    public MovieScreening toEntity() {
+        return new MovieScreening(null, date, movieName, cinemaHall);
     }
 
     public String getMovieName() {

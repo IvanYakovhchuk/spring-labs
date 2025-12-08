@@ -98,6 +98,13 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
 
     @Override
     public MovieScreening save(MovieScreening screening) {
+        if (screening.getId() == null) {
+            var lastId = screenings.stream()
+                    .map(MovieScreening::getId)
+                    .max(Comparator.naturalOrder())
+                    .orElse(0L);
+            screening.setId(lastId + 1);
+        }
         screenings.add(screening);
         return screening;
     }
