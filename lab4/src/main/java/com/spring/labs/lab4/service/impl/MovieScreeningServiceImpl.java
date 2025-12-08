@@ -1,5 +1,6 @@
 package com.spring.labs.lab4.service.impl;
 
+import com.spring.labs.lab4.dto.*;
 import com.spring.labs.lab4.entity.MovieScreening;
 import com.spring.labs.lab4.exception.NoScreeningFound;
 import com.spring.labs.lab4.exception.ScreeningAlreadyExists;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class MovieScreeningServiceImpl implements MovieScreeningService {
@@ -22,16 +22,18 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
                 .orElseThrow(() -> new NoScreeningFound(id));
     }
 
-    public List<MovieScreening> getAllScreenings() {
-        return movieScreeningRepository.findAll();
+    @Override
+    public Page<MovieScreening> getAllScreenings(
+            FilterMovieScreeningDTO filterDTO,
+            PaginationDTO paginationDTO,
+            SortMovieScreeningDTO sortDTO) {
+        return movieScreeningRepository.findAll(filterDTO, paginationDTO, sortDTO);
     }
 
-    public MovieScreening addScreening(MovieScreening screening) {
-        boolean duplicate = movieScreeningRepository.findAll()
-                .stream()
-                .anyMatch(s -> s.getId().equals(screening.getId()));
+    public MovieScreening addScreening(CreateMovieScreeningDTO dto) {
+        var screening = dto.toEntity();
 
-        if (duplicate || movieScreeningExists(screening)) {
+        if (movieScreeningExists(screening) || movieScreeningExists(screening)) {
             throw new ScreeningAlreadyExists("id or date/hall");
         }
 
@@ -39,25 +41,18 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
         return screening;
     }
 
-    public MovieScreening updateScreeningById(long id, MovieScreening newScreening) {
+    public MovieScreening updateScreeningById(long id, UpdateMovieScreeningDTO dto) {
         MovieScreening oldScreening = movieScreeningRepository.findById(id)
                 .orElseThrow(() -> new NoScreeningFound(id));
 
-        boolean duplicate = movieScreeningRepository.findAll().stream()
-                .anyMatch(s -> !s.getId().equals(id) &&
-                        s.getCinemaHall() == newScreening.getCinemaHall() &&
-                        s.getDate().truncatedTo(ChronoUnit.MINUTES)
-                                .isEqual(newScreening.getDate().truncatedTo(ChronoUnit.MINUTES)));
+        MovieScreening newScreening = new MovieScreening(oldScreening);
+        dto.updateEntity(newScreening);
 
-        if (duplicate) {
+        if (movieScreeningCollides(newScreening)) {
             throw new ScreeningAlreadyExists("date/hall");
         }
 
-        oldScreening.setCinemaHall(newScreening.getCinemaHall());
-        oldScreening.setMovieName(newScreening.getMovieName());
-        oldScreening.setDate(newScreening.getDate());
-
-        return oldScreening;
+        return movieScreeningRepository.updateById(id, dto);
     }
 
     public boolean removeScreeningById(long id) {
@@ -65,9 +60,18 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
     }
 
     private boolean movieScreeningExists(MovieScreening movieScreening) {
+        return movieScreeningRepository.findById(movieScreening.getId()).isPresent();
+    }
+
+    private boolean movieScreeningCollides(MovieScreening movieScreening) {
         return movieScreeningRepository.findAll().stream()
-                .anyMatch(s -> s.getCinemaHall() == movieScreening.getCinemaHall() &&
-                        s.getDate().truncatedTo(ChronoUnit.MINUTES)
-                                .isEqual(movieScreening.getDate().truncatedTo(ChronoUnit.MINUTES)));
+                .anyMatch(s -> screeningsCollide(s, movieScreening));
+    }
+
+    private boolean screeningsCollide(MovieScreening s1, MovieScreening s2) {
+        return !s1.getId().equals(s2.getId())
+                && s1.getCinemaHall() == s2.getCinemaHall()
+                && s1.getDate().truncatedTo(ChronoUnit.MINUTES)
+                    .isEqual(s2.getDate().truncatedTo(ChronoUnit.MINUTES));
     }
 }

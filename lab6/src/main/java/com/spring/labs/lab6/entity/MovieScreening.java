@@ -1,22 +1,31 @@
-package com.spring.labs.lab4.entity;
+package com.spring.labs.lab6.entity;
+
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@Entity
+@Table(name = "movie_screening")
+@NamedQuery(
+        name = "MovieScreening.findMovieScreeningByIdUsingNamedQueryAnnotation",
+        query = "SELECT ms FROM MovieScreening ms WHERE ms.id = :id"
+)
 public class MovieScreening {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "date")
     private LocalDateTime date;
+    @Column(name = "movie_name")
     private String movieName;
+    @Column(name = "cinema_hall")
     private int cinemaHall;
-
-    private final Set<Long> bookedSeatsIds = new HashSet<>();
-
-    public static List<String> getSortFields() {
-        return List.of("id", "date", "movieName", "cinemaHall");
-    }
+    @OneToMany(mappedBy = "screening", fetch = FetchType.LAZY)
+    private final Set<Ticket> tickets = new HashSet<>();
 
     public MovieScreening() {
     }
@@ -26,14 +35,6 @@ public class MovieScreening {
         this.date = date;
         this.movieName = movieName;
         this.cinemaHall = cinemaHall;
-    }
-
-    public MovieScreening(MovieScreening other) {
-        this.id = other.getId();
-        this.date = other.getDate();
-        this.movieName = other.getMovieName();
-        this.cinemaHall = other.getCinemaHall();
-        this.bookedSeatsIds.addAll(other.getBookedSeatsIds());
     }
 
     public Long getId() {
@@ -69,7 +70,10 @@ public class MovieScreening {
     }
 
     public Set<Long> getBookedSeatsIds() {
-        return bookedSeatsIds;
+        return tickets.stream()
+                .map(Ticket::getSeat)
+                .map(Seat::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -79,7 +83,7 @@ public class MovieScreening {
                 ", date=" + date +
                 ", movieName='" + movieName + '\'' +
                 ", cinemaHall=" + cinemaHall +
-                ", bookedSeatsIds=" + bookedSeatsIds +
+                ", bookedSeatsIds=" + getBookedSeatsIds() +
                 '}';
     }
 }

@@ -3,6 +3,7 @@ package com.spring.labs.lab4.configuration;
 import com.spring.labs.lab4.entity.MovieScreening;
 import com.spring.labs.lab4.entity.Seat;
 import com.spring.labs.lab4.entity.Ticket;
+import com.spring.labs.lab4.exception.NoScreeningFound;
 import com.spring.labs.lab4.repository.MovieScreeningRepository;
 import com.spring.labs.lab4.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,7 +110,7 @@ public class AppConfiguration {
         return args -> {
             for (Ticket ticket : ticketRepo.findAll()) {
                 MovieScreening s = screeningRepo.findById(ticket.getScreeningId())
-                        .orElseThrow(() -> new RuntimeException("No screening"));
+                        .orElseThrow(NoScreeningFound::new);
 
                 s.getBookedSeatsIds().add(ticket.getSeatId());
             }
