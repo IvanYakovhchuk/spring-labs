@@ -2,10 +2,18 @@ package com.spring.labs.lab5.entity;
 
 public class Seat {
     private long id;
-    private long cinemaHallId;
+    private int cinemaHall;
     private int rowNumber;
     private int seatNumber;
     private boolean isVip;
+
+    public Seat(long id, int cinemaHall, int rowNumber, int seatNumber, boolean isVip) {
+        this.id = id;
+        this.cinemaHall = cinemaHall;
+        this.rowNumber = rowNumber;
+        this.seatNumber = seatNumber;
+        this.isVip = isVip;
+    }
 
     public long getId() {
         return id;
@@ -15,12 +23,12 @@ public class Seat {
         this.id = id;
     }
 
-    public long getCinemaHallId() {
-        return cinemaHallId;
+    public int getCinemaHall() {
+        return cinemaHall;
     }
 
-    public void setCinemaHallId(long cinemaHallId) {
-        this.cinemaHallId = cinemaHallId;
+    public void setCinemaHall(int cinemaHall) {
+        this.cinemaHall = cinemaHall;
     }
 
     public int getRowNumber() {

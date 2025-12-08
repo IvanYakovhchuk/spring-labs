@@ -1,6 +1,7 @@
 package com.spring.labs.lab5.repository.impl;
 
 import com.spring.labs.lab5.entity.MovieScreening;
+import com.spring.labs.lab5.entity.Seat;
 import com.spring.labs.lab5.repository.MovieScreeningRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,12 +27,12 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
         screening.setId(rs.getLong("id"));
         screening.setScreeningDate(rs.getObject("screening_date", LocalDateTime.class));
         screening.setMovieName(rs.getString("movie_name"));
-        screening.setCinemaHallId(rs.getLong("cinema_hall"));
+        screening.setCinemaHall(rs.getInt("cinema_hall"));
         return screening;
     };
 
     @Override
-    public long create(MovieScreening screening) {
+    public MovieScreening create(MovieScreening screening) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
@@ -40,10 +41,11 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
             );
             ps.setObject(1, screening.getScreeningDate());
             ps.setString(2, screening.getMovieName());
-            ps.setLong(3, screening.getCinemaHallId());
+            ps.setLong(3, screening.getCinemaHall());
             return ps;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        screening.setId(keyHolder.getKey().longValue());
+        return screening;
     }
 
     @Override
@@ -52,11 +54,17 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
     }
 
     @Override
-    public void update(long id, MovieScreening screening) {
+    public Optional<MovieScreening> findByDateAndCinemaHall(LocalDateTime screeningDate, int cinemaHall) {
+        return jdbcTemplate.query("SELECT * FROM movie_screenings WHERE screening_date = ? AND cinema_hall = ?", MOVIE_SCREENING_MAPPER, screeningDate, cinemaHall).stream().findFirst();
+    }
+
+    @Override
+    public MovieScreening update(long id, MovieScreening screening) {
         jdbcTemplate.update(
             "UPDATE movie_screenings SET screening_date = ?, movie_name = ?, cinema_hall = ? WHERE id = ?",
-            screening.getScreeningDate(), screening.getMovieName(), screening.getCinemaHallId(), id
+            screening.getScreeningDate(), screening.getMovieName(), screening.getCinemaHall(), id
         );
+        return screening;
     }
 
     @Override

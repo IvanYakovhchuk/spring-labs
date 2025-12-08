@@ -7,8 +7,9 @@ import java.util.Optional;
 
 public interface TicketRepository {
     Optional<Ticket> findById(long id);
+    Optional<Ticket> findBySeatAndScreening(long seatId, long screeningId);
     List<Ticket> findAll();
-    long create(Ticket ticket);
-    void update(long id, Ticket ticket);
+    Ticket create(Ticket ticket);
+    Ticket update(long id, Ticket ticket);
     void delete(long id);
 }

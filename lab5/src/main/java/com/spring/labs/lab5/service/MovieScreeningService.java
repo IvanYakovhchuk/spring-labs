@@ -7,7 +7,7 @@ import java.util.List;
 public interface MovieScreeningService {
     MovieScreening getScreeningById(long id);
     List<MovieScreening> getAllScreenings();
-    MovieScreening addScreening(MovieScreening screening);
-    MovieScreening updateScreeningById(long id, MovieScreening newScreening);
-    boolean removeScreeningById(long id);
+    MovieScreening createScreening(MovieScreening screening);
+    MovieScreening updateScreening(MovieScreening newScreening, long id);
+    void deleteScreeningById(long id);
 }

@@ -7,8 +7,9 @@ import java.util.Optional;
 
 public interface SeatRepository {
     Optional<Seat> findById(long id);
+    Optional<Seat> findByCinemaHallAndRowAndNumber(int cinemaHall, int rowNumber, int seatNumber);
     List<Seat> findAll();
-    long create(Seat seat);
-    void update(long id, Seat seat);
+    Seat create(Seat seat);
+    Seat update(long id, Seat seat);
     void delete(long id);
 }

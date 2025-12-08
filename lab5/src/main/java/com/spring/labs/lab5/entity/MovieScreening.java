@@ -8,7 +8,17 @@ public class MovieScreening {
     private long id;
     private LocalDateTime screeningDate;
     private String movieName;
-    private long cinemaHallId;
+    private int cinemaHall;
+
+    public MovieScreening() {
+    }
+
+    public MovieScreening(long id, LocalDateTime date, String movieName, int cinemaHall) {
+        this.id = id;
+        this.screeningDate = date;
+        this.movieName = movieName;
+        this.cinemaHall = cinemaHall;
+    }
 
     public long getId() {
         return id;
@@ -34,12 +44,12 @@ public class MovieScreening {
         this.movieName = movieName;
     }
 
-    public long getCinemaHallId() {
-        return cinemaHallId;
+    public int getCinemaHall() {
+        return cinemaHall;
     }
 
-    public void setCinemaHallId(Long cinemaHallId) {
-        this.cinemaHallId = cinemaHallId;
+    public void setCinemaHall(int cinemaHall) {
+        this.cinemaHall = cinemaHall;
     }
 }
 

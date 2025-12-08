@@ -20,7 +20,7 @@ public class SeatRepositoryImpl implements SeatRepository {
     }
 
     @Override
-    public long create(Seat seat) {
+    public Seat create(Seat seat) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql("""
                 INSERT INTO seats (cinema_hall, row_number, seat_number, is_vip)
@@ -29,7 +29,8 @@ public class SeatRepositoryImpl implements SeatRepository {
             """)
             .paramSource(seat)
             .update(keyHolder);
-        return keyHolder.getKey().longValue();
+        seat.setId(keyHolder.getKey().longValue());
+        return seat;
     }
 
     @Override
@@ -41,7 +42,17 @@ public class SeatRepositoryImpl implements SeatRepository {
     }
 
     @Override
-    public void update(long id, Seat seat) {
+    public Optional<Seat> findByCinemaHallAndRowAndNumber(int cinemaHall, int rowNumber, int seatNumber) {
+        return jdbcClient.sql("SELECT * FROM seats WHERE cinema_hall = ? AND row_number = ? AND seat_number = ?")
+                .param(1, cinemaHall)
+                .param(2,  rowNumber)
+                .param(3,  seatNumber)
+                .query(Seat.class)
+                .optional();
+    }
+
+    @Override
+    public Seat update(long id, Seat seat) {
         seat.setId(id);
         jdbcClient.sql("""
                 UPDATE seats
@@ -50,6 +61,7 @@ public class SeatRepositoryImpl implements SeatRepository {
             """)
             .paramSource(seat)
             .update();
+        return seat;
     }
 
     @Override

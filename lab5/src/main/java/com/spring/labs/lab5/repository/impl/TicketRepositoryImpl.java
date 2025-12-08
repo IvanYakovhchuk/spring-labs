@@ -19,7 +19,7 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public long create(Ticket ticket) {
+    public Ticket create(Ticket ticket) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql("""
                 INSERT INTO tickets (screening_id, seat_id, customer_name, price)
@@ -28,7 +28,8 @@ public class TicketRepositoryImpl implements TicketRepository {
             """)
             .paramSource(ticket)
             .update(keyHolder);
-        return keyHolder.getKey().longValue();
+        ticket.setId(keyHolder.getKey().longValue());
+        return ticket;
     }
 
     @Override
@@ -40,7 +41,16 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public void update(long id, Ticket ticket) {
+    public Optional<Ticket> findBySeatAndScreening(long seatId, long screeningId) {
+        return jdbcClient.sql("SELECT * FROM tickets WHERE seat_id = ? AND screening_id = ?")
+                .param(1, seatId)
+                .param(2, screeningId)
+                .query(Ticket.class)
+                .optional();
+    }
+
+    @Override
+    public Ticket update(long id, Ticket ticket) {
         ticket.setId(id);
         jdbcClient.sql("""
                 UPDATE tickets
@@ -49,6 +59,7 @@ public class TicketRepositoryImpl implements TicketRepository {
             """)
             .paramSource(ticket)
             .update();
+        return ticket;
     }
 
     @Override

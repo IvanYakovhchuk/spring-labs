@@ -1,80 +1,67 @@
 package com.spring.labs.lab5.service.impl;
 
 import com.spring.labs.lab5.entity.Seat;
-import com.spring.labs.lab5.exception.NoSeatFound;
-import com.spring.labs.lab5.exception.SeatAlreadyExists;
+import com.spring.labs.lab5.exception.NoSeatFoundException;
+import com.spring.labs.lab5.exception.SeatAlreadyExistsException;
 import com.spring.labs.lab5.repository.SeatRepository;
 import com.spring.labs.lab5.service.SeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class SeatServiceImpl implements SeatService {
 
-    private SeatRepository seatRepository;
+    private final SeatRepository seatRepository;
 
     @Autowired
-    public void setSeatRepository(SeatRepository seatRepository) {
+    public SeatServiceImpl(SeatRepository seatRepository) {
         this.seatRepository = seatRepository;
     }
 
+    @Override
     public Seat getSeatById(long id) {
         return seatRepository.findById(id)
-                .orElseThrow(() -> new NoSeatFound(id));
+                .orElseThrow(() -> new NoSeatFoundException("No seat found with such id: " + id + "."));
     }
 
+    @Override
     public List<Seat> getAllSeats() {
         return seatRepository.findAll();
     }
 
-    public Seat addSeat(Seat seat) {
-        boolean duplicate = seatRepository.findAll().stream()
-                .anyMatch(s -> s.getId().equals(seat.getId()) || isSeatInfoEqual(s, seat));
-
-        if (duplicate) {
-            throw new SeatAlreadyExists("id or hall/row/number");
-        }
-
-        seatRepository.save(seat);
-        return seat;
+    @Transactional
+    @Override
+    public Seat createSeat(Seat seat) {
+        seatRepository.findByCinemaHallAndRowAndNumber(seat.getCinemaHall(), seat.getRowNumber(), seat.getSeatNumber())
+                .ifPresent(s -> {
+                    throw new SeatAlreadyExistsException("Such seat already exists!");
+                });
+        return seatRepository.create(seat);
     }
 
-    public Seat updateSeatById(long id, Seat newSeat) {
+    @Transactional
+    @Override
+    public Seat updateSeat(Seat newSeat, long id) {
+        Optional<Seat> existingSeat = seatRepository
+                .findByCinemaHallAndRowAndNumber(newSeat.getCinemaHall(), newSeat.getRowNumber(), newSeat.getSeatNumber());
+
+        if (existingSeat.isPresent() && existingSeat.get().getId() != id) {
+            throw new SeatAlreadyExistsException("Cannot update seat. Such seat already exists!");
+        }
+
         Seat oldSeat = seatRepository.findById(id)
-                .orElseThrow(() -> new NoSeatFound(id));
+                .orElseThrow(() -> new NoSeatFoundException("No seat found with such id: " + id + "."));
 
-        boolean duplicate = seatRepository.findAll().stream()
-                .anyMatch(s -> !s.getId().equals(id) && isSeatInfoEqual(s, newSeat));
-
-        if (duplicate) {
-            throw new SeatAlreadyExists("hall/row/number");
-        }
-
-        oldSeat.setCinemaHall(newSeat.getCinemaHall());
-        oldSeat.setRow(newSeat.getRow());
-        oldSeat.setNumber(newSeat.getNumber());
-        oldSeat.setVip(newSeat.isVip());
-
-        return oldSeat;
+        return seatRepository.update(id, newSeat);
     }
 
-    public boolean removeSeatById(long id) {
-        return seatRepository.delete(id);
-    }
-
-    public List<Seat> getAllSeatsOfCinemaHall(int cinemaHall) {
-        return seatRepository.findAll().stream()
-                .filter(s -> s.getCinemaHall() == cinemaHall)
-                .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private boolean isSeatInfoEqual(Seat seat1, Seat seat2) {
-        return seat1.getCinemaHall() == seat2.getCinemaHall() &&
-                seat1.getRow() == seat2.getRow() &&
-                seat1.getNumber() == seat2.getNumber();
+    @Transactional
+    @Override
+    public void deleteSeatById(long id) {
+        seatRepository.delete(id);
     }
 }
