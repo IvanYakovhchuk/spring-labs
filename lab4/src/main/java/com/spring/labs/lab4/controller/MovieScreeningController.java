@@ -66,4 +66,12 @@ public class MovieScreeningController {
         }
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("{id}")
+    public MovieScreeningDTO updateScreening(
+            @PathVariable @Positive @NotNull Long id,
+            @Valid @RequestBody UpdateMovieScreeningDTO dto) {
+        var screening = movieScreeningService.updateScreeningById(id, dto);
+        return MovieScreeningDTO.fromEntity(screening);
+    }
 }

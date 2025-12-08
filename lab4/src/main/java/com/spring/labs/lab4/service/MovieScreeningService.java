@@ -10,6 +10,6 @@ public interface MovieScreeningService {
     MovieScreening getScreeningById(long id);
     Page<MovieScreening> getAllScreenings(FilterMovieScreeningDTO filterDTO, PaginationDTO paginationDTO, SortOrderDTO sortOrderDTO);
     MovieScreening addScreening(CreateMovieScreeningDTO screening);
-    MovieScreening updateScreeningById(long id, MovieScreening newScreening);
+    MovieScreening updateScreeningById(long id, UpdateMovieScreeningDTO newScreening);
     boolean removeScreeningById(long id);
 }

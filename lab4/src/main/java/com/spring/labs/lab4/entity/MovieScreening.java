@@ -23,6 +23,14 @@ public class MovieScreening {
         this.cinemaHall = cinemaHall;
     }
 
+    public MovieScreening(MovieScreening other) {
+        this.id = other.getId();
+        this.date = other.getDate();
+        this.movieName = other.getMovieName();
+        this.cinemaHall = other.getCinemaHall();
+        this.bookedSeatsIds.addAll(other.getBookedSeatsIds());
+    }
+
     public Long getId() {
         return id;
     }

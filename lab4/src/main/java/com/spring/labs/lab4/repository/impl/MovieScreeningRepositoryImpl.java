@@ -110,12 +110,10 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
     }
 
     @Override
-    public MovieScreening update(long id, MovieScreening newScreening) {
+    public MovieScreening updateById(long id, UpdateMovieScreeningDTO newScreening) {
         MovieScreening oldScreening = findById(id).orElse(null);
         if (oldScreening != null) {
-            oldScreening.setCinemaHall(newScreening.getCinemaHall());
-            oldScreening.setDate(newScreening.getDate());
-            oldScreening.setMovieName(newScreening.getMovieName());
+            newScreening.updateEntity(oldScreening);
         }
         return oldScreening;
     }

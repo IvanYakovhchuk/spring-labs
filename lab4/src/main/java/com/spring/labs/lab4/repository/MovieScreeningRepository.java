@@ -11,6 +11,6 @@ public interface MovieScreeningRepository {
     Page<MovieScreening> findAll(FilterMovieScreeningDTO filterDTO, PaginationDTO paginationDTO, SortOrderDTO sortOrderDTO);
     List<MovieScreening> findAll();
     MovieScreening save(MovieScreening screening);
-    MovieScreening update(long id, MovieScreening newScreening);
+    MovieScreening updateById(long id, UpdateMovieScreeningDTO newScreening);
     boolean delete(long id);
 }
