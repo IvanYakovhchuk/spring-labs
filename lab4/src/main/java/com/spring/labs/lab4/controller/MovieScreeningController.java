@@ -1,12 +1,14 @@
 package com.spring.labs.lab4.controller;
 
 import com.spring.labs.lab4.dto.*;
+import com.spring.labs.lab4.exception.NoScreeningFound;
 import com.spring.labs.lab4.service.MovieScreeningService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -53,5 +55,15 @@ public class MovieScreeningController {
     public MovieScreeningDTO addScreening(@Valid @RequestBody CreateMovieScreeningDTO dto) {
         var screening = movieScreeningService.addScreening(dto);
         return MovieScreeningDTO.fromEntity(screening);
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> deleteScreening(@PathVariable @Positive @NotNull Long id) {
+        var deleted = movieScreeningService.removeScreeningById(id);
+        if (!deleted) {
+            throw new NoScreeningFound();
+        }
+        return ResponseEntity.ok().build();
     }
 }
