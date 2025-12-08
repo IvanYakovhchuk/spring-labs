@@ -1,5 +1,9 @@
 package com.spring.labs.lab4.service.impl;
 
+import com.spring.labs.lab4.dto.FilterMovieScreeningDTO;
+import com.spring.labs.lab4.dto.Page;
+import com.spring.labs.lab4.dto.PaginationDTO;
+import com.spring.labs.lab4.dto.SortOrderDTO;
 import com.spring.labs.lab4.entity.MovieScreening;
 import com.spring.labs.lab4.exception.NoScreeningFound;
 import com.spring.labs.lab4.exception.ScreeningAlreadyExists;
@@ -22,8 +26,12 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
                 .orElseThrow(() -> new NoScreeningFound(id));
     }
 
-    public List<MovieScreening> getAllScreenings() {
-        return movieScreeningRepository.findAll();
+    @Override
+    public Page<MovieScreening> getAllScreenings(
+            FilterMovieScreeningDTO filterDTO,
+            PaginationDTO paginationDTO,
+            SortOrderDTO sortOrderDTO) {
+        return movieScreeningRepository.findAll(filterDTO, paginationDTO, sortOrderDTO);
     }
 
     public MovieScreening addScreening(MovieScreening screening) {
