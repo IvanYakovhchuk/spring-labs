@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface MovieScreeningRepository {
     Optional<MovieScreening> findById(long id);
-    Page<MovieScreening> findAll(FilterMovieScreeningDTO filterDTO, PaginationDTO paginationDTO, SortOrderDTO sortOrderDTO);
+    Page<MovieScreening> findAll(FilterMovieScreeningDTO filterDTO, PaginationDTO paginationDTO, SortMovieScreeningDTO sortDTO);
     List<MovieScreening> findAll();
     MovieScreening save(MovieScreening screening);
     MovieScreening updateById(long id, UpdateMovieScreeningDTO newScreening);

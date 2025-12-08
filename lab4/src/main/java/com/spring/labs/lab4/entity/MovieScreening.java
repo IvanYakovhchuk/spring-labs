@@ -2,6 +2,7 @@ package com.spring.labs.lab4.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MovieScreening {
@@ -12,6 +13,10 @@ public class MovieScreening {
     private int cinemaHall;
 
     private final Set<Long> bookedSeatsIds = new HashSet<>();
+
+    public static List<String> getSortFields() {
+        return List.of("id", "date", "movieName", "cinemaHall");
+    }
 
     public MovieScreening() {
     }

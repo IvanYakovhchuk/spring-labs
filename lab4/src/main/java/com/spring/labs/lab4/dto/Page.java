@@ -1,14 +1,24 @@
 package com.spring.labs.lab4.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+@Schema(description = "Paginated data")
 public class Page<T> {
+    @Schema(description = "Requested pagination")
     private PaginationDTO requested;
+
+    @Schema(description = "Actual page size")
     private int pageSize;
+
+    @Schema(description = "Total number of pages")
     private int totalPages;
+
+    @Schema(description = "Total number of elements")
     private int total;
+
+    @Schema(description = "Page items")
     private List<T> items;
 
     public Page() {}

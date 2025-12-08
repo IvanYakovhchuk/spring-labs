@@ -1,15 +1,25 @@
 package com.spring.labs.lab4.dto;
 
 import com.spring.labs.lab4.entity.MovieScreening;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class MovieScreeningDTO {
+    @Schema(description = "Movie screening id")
     private Long id;
+
+    @Schema(description = "Movie screening start time")
     private LocalDateTime date;
+
+    @Schema(description = "Movie screening title")
     private String movieName;
+
+    @Schema(description = "Movie screening cinema hall number")
     private int cinemaHall;
+
+    @Schema(description = "List of ids for seats booked for the screening")
     private List<Long> bookedSeatsIds;
 
     public MovieScreeningDTO() {

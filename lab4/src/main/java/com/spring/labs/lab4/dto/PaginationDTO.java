@@ -1,11 +1,14 @@
 package com.spring.labs.lab4.dto;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.Min;
 
 public class PaginationDTO {
+    @Parameter(description = "Page number to return")
     @Min(1)
     private int page = 1;
 
+    @Parameter(description = "Number of elements on a page")
     @Min(1)
     private int pageSize = 10;
 

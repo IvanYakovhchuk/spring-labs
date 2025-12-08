@@ -36,11 +36,11 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
     public Page<MovieScreening> findAll(
             FilterMovieScreeningDTO filterDTO,
             PaginationDTO paginationDTO,
-            SortOrderDTO sortOrderDTO) {
+            SortMovieScreeningDTO sortDTO) {
         int skip = (paginationDTO.getPage() - 1) * paginationDTO.getPageSize();
         int take = paginationDTO.getPageSize();
         var filter = getFilter(filterDTO);
-        var comparator = getComparator(sortOrderDTO);
+        var comparator = getComparator(sortDTO);
         var items = screenings.stream()
                 .filter(filter)
                 .sorted(comparator)
@@ -77,7 +77,7 @@ public class MovieScreeningRepositoryImpl implements MovieScreeningRepository {
         return predicates.stream().reduce(Predicate::and).orElse(null);
     }
 
-    private Comparator<MovieScreening> getComparator(SortOrderDTO orderDTO) {
+    private Comparator<MovieScreening> getComparator(SortMovieScreeningDTO orderDTO) {
         var order = orderDTO.getOrderBy();
         Comparator<MovieScreening> comparator = null;
         if (order.equals("id")) {

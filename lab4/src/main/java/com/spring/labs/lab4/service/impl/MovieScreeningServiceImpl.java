@@ -26,8 +26,8 @@ public class MovieScreeningServiceImpl implements MovieScreeningService {
     public Page<MovieScreening> getAllScreenings(
             FilterMovieScreeningDTO filterDTO,
             PaginationDTO paginationDTO,
-            SortOrderDTO sortOrderDTO) {
-        return movieScreeningRepository.findAll(filterDTO, paginationDTO, sortOrderDTO);
+            SortMovieScreeningDTO sortDTO) {
+        return movieScreeningRepository.findAll(filterDTO, paginationDTO, sortDTO);
     }
 
     public MovieScreening addScreening(CreateMovieScreeningDTO dto) {
