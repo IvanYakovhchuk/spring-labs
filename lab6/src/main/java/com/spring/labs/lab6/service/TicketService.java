@@ -1,6 +1,7 @@
 package com.spring.labs.lab6.service;
 
 import com.spring.labs.lab6.entity.Ticket;
+import jakarta.transaction.TransactionRolledbackException;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface TicketService {
     Ticket createTicket(Ticket ticket);
     Ticket updateTicket(Ticket newTicket, long id);
     void deleteTicketById(long id);
+    Ticket createTicket(Ticket ticket, boolean forceFail);
 }

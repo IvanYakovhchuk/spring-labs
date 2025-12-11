@@ -6,6 +6,7 @@ import com.spring.labs.lab6.entity.Ticket;
 import com.spring.labs.lab6.exception.InvalidSeatForScreeningException;
 import com.spring.labs.lab6.exception.NoTicketFoundException;
 import com.spring.labs.lab6.exception.TicketAlreadyExistsException;
+import com.spring.labs.lab6.exception.TransactionFailedException;
 import com.spring.labs.lab6.repository.TicketRepository;
 import com.spring.labs.lab6.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,20 @@ public class TicketServiceImpl implements TicketService {
 
         ticket.setId(null);
         return ticketRepository.save(ticket);
+    }
+
+    @Override
+    @Transactional
+    public Ticket createTicket(Ticket ticket, boolean forceFail)  {
+        checkSeatBelongsToScreeningHall(ticket);
+        checkSeatAlreadyBooked(ticket);
+
+        ticket.setId(null);
+        Ticket created = ticketRepository.save(ticket);
+        if (forceFail) {
+            throw new TransactionFailedException("Transaction was failed, rollback occurred!");
+        }
+        return created;
     }
 
     @Override
