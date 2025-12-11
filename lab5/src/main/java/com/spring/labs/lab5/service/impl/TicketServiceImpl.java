@@ -1,5 +1,6 @@
 package com.spring.labs.lab5.service.impl;
 
+import com.spring.labs.lab5.dto.TicketDTO;
 import com.spring.labs.lab5.entity.MovieScreening;
 import com.spring.labs.lab5.entity.Seat;
 import com.spring.labs.lab5.entity.Ticket;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -37,41 +39,51 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Ticket getTicketById(long id) {
-        return ticketRepository.findById(id)
-                .orElseThrow(() -> new NoTicketFoundException("No ticket found with id: " + id + "."));
+    public TicketDTO getTicketById(long id) {
+        Ticket ticket = ticketRepository.findById(id)
+            .orElseThrow(() -> new NoTicketFoundException("No ticket found with id: " + id + "."));
+
+        return buildTicketWithRelations(ticket);
     }
 
     @Override
-    public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
+    public List<TicketDTO> getAllTickets() {
+        List<Ticket> tickets = ticketRepository.findAll();
+
+        return tickets.stream()
+            .map(this::buildTicketWithRelations)
+            .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public Ticket createTicket(Ticket ticket) {
+    public TicketDTO createTicket(Ticket ticket) {
         checkSeatBelongsToScreeningHall(ticket);
         checkSeatAlreadyBooked(ticket);
 
-        return ticketRepository.create(ticket);
+        Ticket createdTicket = ticketRepository.create(ticket);
+
+        return buildTicketWithRelations(createdTicket);
     }
 
     @Override
     @Transactional
-    public Ticket updateTicket(Ticket newTicket, long id) {
+    public TicketDTO updateTicket(Ticket newTicket, long id) {
         checkSeatBelongsToScreeningHall(newTicket);
 
         Optional<Ticket> existingTicket = ticketRepository
-                .findBySeatAndScreening(newTicket.getSeatId(), newTicket.getScreeningId());
+            .findBySeatAndScreening(newTicket.getSeatId(), newTicket.getScreeningId());
 
         if (existingTicket.isPresent() && existingTicket.get().getId() != id) {
             throw new TicketAlreadyExistsException(buildBookedSeatMessage(newTicket, true));
         }
 
         Ticket oldTicket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NoTicketFoundException("No ticket found with id: " + id + "."));
+            .orElseThrow(() -> new NoTicketFoundException("No ticket found with id: " + id + "."));
 
-        return ticketRepository.update(id, newTicket);
+        Ticket updatedTicket = ticketRepository.update(id, newTicket);
+
+        return buildTicketWithRelations(updatedTicket);
     }
 
     @Override
@@ -89,20 +101,20 @@ public class TicketServiceImpl implements TicketService {
         MovieScreening screening = movieScreeningService.getScreeningById(ticket.getScreeningId());
         String action = isUpdate ? "Cannot update ticket. " : "";
         return String.format(
-                "%sSeat %d (row %d) for screening \"%s\" (%s) is already booked!",
-                action,
-                seat.getCinemaHall(),
-                seat.getRowNumber(),
-                screening.getMovieName(),
-                screening.getScreeningDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm"))
+            "%sSeat %d (row %d) for screening \"%s\" (%s) is already booked!",
+            action,
+            seat.getCinemaHall(),
+            seat.getRowNumber(),
+            screening.getMovieName(),
+            screening.getScreeningDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm"))
         );
     }
 
     private void checkSeatAlreadyBooked(Ticket ticket) {
         ticketRepository.findBySeatAndScreening(ticket.getSeatId(), ticket.getScreeningId())
-                .ifPresent(t -> {
-                    throw new TicketAlreadyExistsException(buildBookedSeatMessage(ticket));
-                });
+            .ifPresent(t -> {
+                throw new TicketAlreadyExistsException(buildBookedSeatMessage(ticket));
+            });
     }
 
     private void checkSeatBelongsToScreeningHall(Ticket ticket) {
@@ -110,12 +122,18 @@ public class TicketServiceImpl implements TicketService {
         MovieScreening screening = movieScreeningService.getScreeningById(ticket.getScreeningId());
         if (seat.getCinemaHall() != screening.getCinemaHall()) {
             throw new InvalidSeatForScreeningException(
-                    String.format(
-                            "Seat you are trying to book is located in a different cinema hall (%d) than the one screening will be shown in (%d)",
-                            seat.getCinemaHall(),
-                            screening.getCinemaHall()
-                    )
+                String.format(
+                    "Seat you are trying to book is located in a different cinema hall (%d) than the one screening will be shown in (%d)",
+                    seat.getCinemaHall(),
+                    screening.getCinemaHall()
+                )
             );
         }
+    }
+
+    private TicketDTO buildTicketWithRelations (Ticket ticket) {
+        Seat seat = seatService.getSeatById(ticket.getSeatId());
+        MovieScreening screening = movieScreeningService.getScreeningById(ticket.getScreeningId());
+        return TicketDTO.fromEntity(ticket, seat, screening);
     }
 }

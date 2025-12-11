@@ -7,6 +7,8 @@ public class Seat {
     private int seatNumber;
     private boolean isVip;
 
+    public Seat() {}
+
     public Seat(long id, int cinemaHall, int rowNumber, int seatNumber, boolean isVip) {
         this.id = id;
         this.cinemaHall = cinemaHall;

@@ -1,8 +1,6 @@
 package com.spring.labs.lab5.entity;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MovieScreening {
     private long id;

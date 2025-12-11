@@ -9,7 +9,16 @@ public class Ticket {
     private String customerName;
     private BigDecimal price;
 
-    // Getters and Setters
+    public Ticket() {}
+
+    public Ticket(long id, long seatId, long screeningId, String customerName, BigDecimal price) {
+        this.id = id;
+        this.seatId = seatId;
+        this.screeningId = screeningId;
+        this.customerName = customerName;
+        this.price = price;
+    }
+
     public long getId() {
         return id;
     }
