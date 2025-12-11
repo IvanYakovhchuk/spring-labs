@@ -1,7 +1,9 @@
 package com.spring.labs.lab6.entity;
 
-import com.spring.labs.lab6.dto.SeatDTO;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "seat")
@@ -22,6 +24,8 @@ public class Seat {
     private int number;
     @Column(name = "vip")
     private boolean vip;
+    @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
 
     public Seat() {
     }

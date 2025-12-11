@@ -14,10 +14,10 @@ public class Ticket {
     @Column(name = "id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "screening_id")
+    @JoinColumn(name = "screening_id", nullable = false)
     private MovieScreening screening;
     @ManyToOne
-    @JoinColumn(name = "seat_id")
+    @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
     @Column(name = "customer_name")
     private String customerName;

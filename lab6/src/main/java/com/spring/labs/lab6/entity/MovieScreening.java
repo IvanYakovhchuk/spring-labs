@@ -3,6 +3,8 @@ package com.spring.labs.lab6.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "movie_screening")
@@ -15,12 +17,14 @@ public class MovieScreening {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "date")
+    @Column(name = "date", columnDefinition = "TEXT")
     private LocalDateTime date;
     @Column(name = "movie_name")
     private String movieName;
     @Column(name = "cinema_hall")
     private int cinemaHall;
+    @OneToMany(mappedBy = "screening", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
 
     public MovieScreening() {
     }
