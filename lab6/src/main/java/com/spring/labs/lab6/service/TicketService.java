@@ -1,7 +1,6 @@
 package com.spring.labs.lab6.service;
 
 import com.spring.labs.lab6.entity.Ticket;
-import jakarta.transaction.TransactionRolledbackException;
 
 import java.util.List;
 

@@ -1,10 +1,13 @@
 package com.spring.labs.lab6.handler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.spring.labs.lab6.exception.*;
 import com.spring.labs.lab6.exception.response.ExceptionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -56,5 +59,19 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidFormat(HttpMessageNotReadableException ex) throws Throwable {
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException invalidFormatException) {
+            if (invalidFormatException.getTargetType().equals(java.time.LocalDateTime.class)) {
+                return buildResponse(HttpStatus.BAD_REQUEST, "Invalid date-time format. Please use 'yyyy-MM-dd HH:mm:ss'.");
+            }
+        }
+        return buildResponse(HttpStatus.BAD_REQUEST, cause.getMessage());
+    }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        return buildResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage());
+    }
 }

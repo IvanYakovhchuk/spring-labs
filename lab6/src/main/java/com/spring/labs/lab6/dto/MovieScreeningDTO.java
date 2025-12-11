@@ -1,5 +1,6 @@
 package com.spring.labs.lab6.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.labs.lab6.entity.MovieScreening;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,6 +13,7 @@ public record MovieScreeningDTO(
                 example = "2026-01-03T14:00:00",
                 type = "string"
         )
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime date,
         @Schema(description = "Name of the movie", example = "The Green Mile") String movieName,
         @Schema(description = "Cinema hall where the screening of the movie will take place", example = "2") int cinemaHall
