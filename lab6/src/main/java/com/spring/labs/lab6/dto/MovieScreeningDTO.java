@@ -1,6 +1,5 @@
 package com.spring.labs.lab6.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.labs.lab6.entity.MovieScreening;
 import io.swagger.v3.oas.annotations.media.Schema;
 
