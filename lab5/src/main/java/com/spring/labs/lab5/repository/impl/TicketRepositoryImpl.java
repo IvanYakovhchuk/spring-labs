@@ -24,7 +24,7 @@ public class TicketRepositoryImpl implements TicketRepository {
         jdbcClient.sql("""
                 INSERT INTO tickets (screening_id, seat_id, customer_name, price)
                 VALUES (:screeningId, :seatId, :customerName, :price)
-                RETURNING *
+                RETURNING id
             """)
             .paramSource(ticket)
             .update(keyHolder);
