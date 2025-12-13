@@ -24,8 +24,8 @@ public class SeatRepositoryImpl implements SeatRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql("""
                 INSERT INTO seats (cinema_hall, row_number, seat_number, is_vip)
-                VALUES (:cinemaHallId, :rowNumber, :seatNumber, :vip)
-                RETURNING *
+                VALUES (:cinemaHall, :rowNumber, :seatNumber, :isVip)
+                RETURNING id
             """)
             .paramSource(seat)
             .update(keyHolder);
